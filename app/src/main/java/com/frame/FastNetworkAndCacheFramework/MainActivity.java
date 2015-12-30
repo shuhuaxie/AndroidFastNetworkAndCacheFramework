@@ -1,7 +1,8 @@
-package com.frame.FastNetworkAndCacheFramework.data;
+package com.frame.FastNetworkAndCacheFramework;
 
 import android.app.Activity;
 
+import com.frame.FastNetworkAndCacheFramework.data.FNFDataService;
 import com.frame.FastNetworkAndCacheFramework.data.entity.CompositeData;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentOfPostResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentResponse;
@@ -19,7 +20,6 @@ import rx.functions.Action1;
 import rx.functions.Func2;
 
 public class MainActivity extends Activity {
-
 
   @InjectView(R.id.main_tv) TextView mMainTv;
 

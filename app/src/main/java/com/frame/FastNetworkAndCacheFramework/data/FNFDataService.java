@@ -1,5 +1,8 @@
 package com.frame.FastNetworkAndCacheFramework.data;
 
+import android.frame.FastNetworkAndCacheFramework.BuildConfig;
+import android.util.Log;
+
 import com.frame.FastNetworkAndCacheFramework.data.common.ShowDialogError;
 import com.frame.FastNetworkAndCacheFramework.data.common.TokenFailedError;
 import com.frame.FastNetworkAndCacheFramework.data.response.BaseResponse;
@@ -24,7 +27,8 @@ import rx.schedulers.Schedulers;
 
 public class FNFDataService {
 
-  private static final String ENDPOINT = "https://gist.githubusercontent.com/shuhuaxie";
+  private static final String RELEASE_ENDPOINT = "https://gist.githubusercontent.com/shuhuaxie";
+  private static final String TEST_ENDPOINT = "https://gist.githubusercontent.com/shuhuaxie";
   private static final long CONNECT_TIMEOUT_MILLIS = 20 * 1000;
   private static final long READ_TIMEOUT_MILLIS = 30 * 1000;
 
@@ -90,7 +94,7 @@ public class FNFDataService {
     }).subscribeOn(Schedulers.io());
   }
 
-  public Observable<StudentOfPostResponse> getStudentByPost(final String id ) {
+  public Observable<StudentOfPostResponse> getStudentByPost(final String id) {
     return Observable.create(new Observable.OnSubscribe<StudentOfPostResponse>() {
       @Override
       public void call(Subscriber<? super StudentOfPostResponse> subscriber) {
@@ -112,9 +116,21 @@ public class FNFDataService {
       }
     }).subscribeOn(Schedulers.io());
   }
+
   public String getEndPoint() {
-    return ENDPOINT;
+    switch (BuildConfig.SERVER_ENVIRONMENT) {
+      case Release:
+        Log.e("FastNF", "server_env : Release");
+        return RELEASE_ENDPOINT;
+      case Test:
+        Log.e("FastNF", "server_env : Test");
+        return TEST_ENDPOINT;
+      default:
+        Log.e("FastNF", "server_env : Default");
+        return RELEASE_ENDPOINT;
+    }
   }
+
   private void checkErrorMessage(BaseResponse response) {
     if (response.status == 401) {
       throw new TokenFailedError(response.message);
@@ -124,4 +140,5 @@ public class FNFDataService {
       throw new RuntimeException(response.message);
     }
   }
+
 }

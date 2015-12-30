@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.frame.FastNetworkAndCacheFramework.BuildConfig;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.frame.FastNetworkAndCacheFramework.data.common.Constants;
 import com.frame.FastNetworkAndCacheFramework.data.common.ShowDialogError;
 import com.frame.FastNetworkAndCacheFramework.data.common.TokenFailedError;
 
@@ -37,7 +39,8 @@ public class UiUtils {
         throwable.getMessage().startsWith("Unable to resolve host"))) ||
         (throwable.getCause() instanceof SocketTimeoutException)) {
       showToast(activity, "network error");
-    } else if (throwable instanceof RuntimeException) {
+    } else if (throwable instanceof RuntimeException &&
+        BuildConfig.SERVER_ENVIRONMENT.equals(Constants.ServerEnvironment.Test)) {
       showToast(activity, throwable.getMessage());
     } else {
       toastError(activity, throwable, "network error");
