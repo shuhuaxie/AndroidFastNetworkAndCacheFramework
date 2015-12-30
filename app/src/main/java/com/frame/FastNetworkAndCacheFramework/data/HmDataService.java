@@ -78,6 +78,7 @@ public class HmDataService {
           return;
         }
         StudentResponse response = mHmRestService.getStudent();
+        mDataManager.put(CacheKeys.STUDENT, response);
         subscriber.onNext(response);
         subscriber.onCompleted();
       }
