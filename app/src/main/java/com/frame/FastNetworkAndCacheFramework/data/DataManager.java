@@ -25,7 +25,6 @@ public class DataManager {
     mExpireTimeMap = new HashMap<>();
   }
 
-
   public synchronized <T> T get(String key) {
 
     return get(key, false);

@@ -1,6 +1,9 @@
 package com.frame.FastNetworkAndCacheFramework.data;
 
 import android.app.Activity;
+
+import com.frame.FastNetworkAndCacheFramework.data.entity.CompositeData;
+import com.frame.FastNetworkAndCacheFramework.data.response.StudentOfPostResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentResponse;
 
 import android.frame.FastNetworkAndCacheFramework.R;
@@ -12,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func2;
 
 public class MainActivity extends Activity {
 
@@ -23,7 +27,12 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.inject(this);
-    HmDataService.getInstance().getStudent()
+    normalReq();
+    concurrenceReq();
+  }
+
+  private void normalReq() {
+    FNFDataService.getInstance().getStudent()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
             new Action1<StudentResponse>() {
@@ -35,7 +44,33 @@ public class MainActivity extends Activity {
             new Action1<Throwable>() {
               @Override
               public void call(Throwable throwable) {
-                Log.e("FastNCF", throwable.getMessage());
+                Log.e("FastNF", throwable.getMessage());
+              }
+            });
+  }
+
+  private void concurrenceReq() {
+    FNFDataService.getInstance().getStudent()
+        .zipWith(FNFDataService.getInstance().getStudentByPost("12306"),
+            new Func2<StudentResponse, StudentOfPostResponse, CompositeData>() {
+              @Override
+              public CompositeData call(StudentResponse studentResponse, StudentOfPostResponse studentResponse2) {
+                Log.e("FastNF", Thread.currentThread().getName());
+                return new CompositeData(studentResponse2, studentResponse);
+              }
+            })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            new Action1<CompositeData>() {
+              @Override
+              public void call(CompositeData compositeData) {
+                mMainTv.setText(compositeData.studentResponse.student.toString());
+              }
+            },
+            new Action1<Throwable>() {
+              @Override
+              public void call(Throwable throwable) {
+                Log.e("FastNF", throwable.getMessage());
               }
             });
   }

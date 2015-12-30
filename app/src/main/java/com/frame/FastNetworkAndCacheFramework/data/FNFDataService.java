@@ -1,5 +1,6 @@
 package com.frame.FastNetworkAndCacheFramework.data;
 
+import com.frame.FastNetworkAndCacheFramework.data.response.StudentOfPostResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentResponse;
 
 import com.google.gson.FieldNamingPolicy;
@@ -18,25 +19,25 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
-public class HmDataService {
+public class FNFDataService {
 
   private static final String ENDPOINT = "https://gist.githubusercontent.com/shuhuaxie";
   private static final long CONNECT_TIMEOUT_MILLIS = 20 * 1000;
   private static final long READ_TIMEOUT_MILLIS = 30 * 1000;
 
-  private static HmDataService sInstance;
+  private static FNFDataService sInstance;
 
-  public static HmDataService getInstance() {
+  public static FNFDataService getInstance() {
     if (sInstance == null) {
-      sInstance = new HmDataService(DataManager.getInstance());
+      sInstance = new FNFDataService(DataManager.getInstance());
     }
     return sInstance;
   }
 
   private final DataManager mDataManager;
-  private final HmRestService mHmRestService;
+  private final FNFRestService mHmRestService;
 
-  public HmDataService(DataManager dataManager) {
+  public FNFDataService(DataManager dataManager) {
     mDataManager = dataManager;
     Gson gson = new GsonBuilder()
         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -61,7 +62,7 @@ public class HmDataService {
         .setRequestInterceptor(interceptor)
         .setClient(new OkClient(client))
         .build();
-    mHmRestService = restAdapter.create(HmRestService.class);
+    mHmRestService = restAdapter.create(FNFRestService.class);
   }
 
   public Observable<StudentResponse> getStudent() {
@@ -78,6 +79,28 @@ public class HmDataService {
           return;
         }
         StudentResponse response = mHmRestService.getStudent();
+        mDataManager.put(CacheKeys.STUDENT, response);
+        subscriber.onNext(response);
+        subscriber.onCompleted();
+      }
+    }).subscribeOn(Schedulers.io());
+  }
+
+  public Observable<StudentOfPostResponse> getStudentByPost(final String id ) {
+    return Observable.create(new Observable.OnSubscribe<StudentOfPostResponse>() {
+      @Override
+      public void call(Subscriber<? super StudentOfPostResponse> subscriber) {
+        if (subscriber.isUnsubscribed()) {
+          return;
+        }
+        StudentOfPostResponse cachedResp = mDataManager.get(CacheKeys.STUDENT);
+        if (cachedResp != null) {
+          subscriber.onNext(cachedResp);
+          subscriber.onCompleted();
+          return;
+        }
+        StudentOfPostResponse response = mHmRestService.getStudentByPost(
+            new FNFDataServiceTasks.GetPersonTask(id));
         mDataManager.put(CacheKeys.STUDENT, response);
         subscriber.onNext(response);
         subscriber.onCompleted();
