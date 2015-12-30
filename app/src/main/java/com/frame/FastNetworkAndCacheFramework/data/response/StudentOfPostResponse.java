@@ -1,6 +1,6 @@
 package com.frame.FastNetworkAndCacheFramework.data.response;
 
-public class StudentOfPostResponse {
+public class StudentOfPostResponse extends BaseResponse{
 
   public Student student;
 

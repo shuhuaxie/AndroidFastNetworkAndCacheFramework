@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.frame.FastNetworkAndCacheFramework.data.entity.CompositeData;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentOfPostResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentResponse;
+import com.frame.FastNetworkAndCacheFramework.data.utils.UiUtils;
 
 import android.frame.FastNetworkAndCacheFramework.R;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class MainActivity extends Activity {
               @Override
               public void call(Throwable throwable) {
                 Log.e("FastNF", throwable.getMessage());
+                UiUtils.dealError(MainActivity.this, throwable);
               }
             });
   }
@@ -71,6 +73,7 @@ public class MainActivity extends Activity {
               @Override
               public void call(Throwable throwable) {
                 Log.e("FastNF", throwable.getMessage());
+                UiUtils.dealError(MainActivity.this, throwable);
               }
             });
   }

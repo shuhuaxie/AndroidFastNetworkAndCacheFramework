@@ -1,5 +1,8 @@
 package com.frame.FastNetworkAndCacheFramework.data;
 
+import com.frame.FastNetworkAndCacheFramework.data.common.ShowDialogError;
+import com.frame.FastNetworkAndCacheFramework.data.common.TokenFailedError;
+import com.frame.FastNetworkAndCacheFramework.data.response.BaseResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentOfPostResponse;
 import com.frame.FastNetworkAndCacheFramework.data.response.StudentResponse;
 
@@ -79,6 +82,7 @@ public class FNFDataService {
           return;
         }
         StudentResponse response = mHmRestService.getStudent();
+        checkErrorMessage(response);
         mDataManager.put(CacheKeys.STUDENT, response);
         subscriber.onNext(response);
         subscriber.onCompleted();
@@ -101,6 +105,7 @@ public class FNFDataService {
         }
         StudentOfPostResponse response = mHmRestService.getStudentByPost(
             new FNFDataServiceTasks.GetPersonTask(id));
+        checkErrorMessage(response);
         mDataManager.put(CacheKeys.STUDENT, response);
         subscriber.onNext(response);
         subscriber.onCompleted();
@@ -110,5 +115,13 @@ public class FNFDataService {
   public String getEndPoint() {
     return ENDPOINT;
   }
-
+  private void checkErrorMessage(BaseResponse response) {
+    if (response.status == 401) {
+      throw new TokenFailedError(response.message);
+    } else if (response.status == 901) {
+      throw new ShowDialogError(response.message);
+    } else if (response.status != 0) {
+      throw new RuntimeException(response.message);
+    }
+  }
 }
