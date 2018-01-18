@@ -13,21 +13,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func2;
 
 public class MainActivity extends Activity {
 
-  @InjectView(R.id.main_tv) TextView mMainTv;
+  @BindView(R.id.main_tv) TextView mMainTv;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    ButterKnife.inject(this);
+    ButterKnife.bind(this);
     normalReq();
     concurrenceReq();
   }
